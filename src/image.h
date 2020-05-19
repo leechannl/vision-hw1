@@ -3,12 +3,13 @@
 
 // DO NOT CHANGE THIS FILE
 
-typedef struct{
-    int w,h,c;
-    float *data;
+typedef struct {
+  int w, h, c;
+  float *data;
 } image;
 
 // Basic operations
+void image_info(image im);
 float get_pixel(image im, int x, int y, int c);
 void set_pixel(image im, int x, int y, int c, float v);
 image copy_image(image im);
@@ -52,4 +53,3 @@ image *sobel_image(image im);
 image colorize_sobel(image im);
 
 #endif
-
