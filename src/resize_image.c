@@ -38,11 +38,51 @@ image nn_resize(image im, int w, int h) {
 }
 
 float bilinear_interpolate(image im, float x, float y, int c) {
-  // TODO
-  return 0;
+  //
+  // (x1,y1)-----*-----(x2, y1)
+  //    |        |        |
+  //    a        |        |
+  //    |        |        |
+  //    q1--m--(x,y)--p---q2
+  //    |        |        |
+  //    b        |        |
+  //    |        |        |
+  // (x1,y2)-----*-----(x2,y2)
+  //
+
+  float x1 = floorf(x);
+  float y1 = floorf(y);
+  float x2 = ceilf(x);
+  float y2 = ceilf(y);
+
+  float a = y - floorf(y);
+  float b = ceilf(y) - y;
+  float m = x - floorf(x);
+  float p = ceilf(x) - x;
+
+  float q1 = get_pixel(im, x1, y1, c) * b + get_pixel(im, x1, y2, c) * a;
+  float q2 = get_pixel(im, x2, y1, c) * b + get_pixel(im, x2, y2, c) * a;
+
+  return q1 * p + q2 * m;
 }
 
 image bilinear_resize(image im, int w, int h) {
-  // TODO
-  return make_image(1, 1, 1);
+  image_info(im);
+  image new_image = make_image(w, h, im.c);
+
+  for (int i = 0; i < w; i++) {
+    for (int j = 0; j < h; j++) {
+      for (int k = 0; k < im.c; k++) {
+        float a = (float)im.w / (float)w;
+        float b = -0.5 + 0.5 * a;
+        float new_x = i * a + b;
+        float new_y = j * a + b;
+        float v = bilinear_interpolate(im, new_x, new_y, k);
+        set_pixel(new_image, i, j, k, v);
+      }
+    }
+  }
+
+  image_info(new_image);
+  return new_image;
 }

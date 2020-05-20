@@ -1,24 +1,24 @@
-import sys, os
-from ctypes import *
-import math
-import random
+import os
+from ctypes import CDLL, POINTER, RTLD_GLOBAL, Structure, c_char_p, c_float, c_int
 
 lib = CDLL(os.path.join(os.path.dirname(__file__), "libuwimg.so"), RTLD_GLOBAL)
 
+
 def c_array(ctype, values):
-    arr = (ctype*len(values))()
+    arr = (ctype * len(values))()
     arr[:] = values
     return arr
 
+
 class IMAGE(Structure):
-    _fields_ = [("w", c_int),
-                ("h", c_int),
-                ("c", c_int),
-                ("data", POINTER(c_float))]
+    _fields_ = [("w", c_int), ("h", c_int), ("c", c_int), ("data", POINTER(c_float))]
+
     def __add__(self, other):
         return add_image(self, other)
+
     def __sub__(self, other):
         return sub_image(self, other)
+
 
 add_image = lib.add_image
 add_image.argtypes = [IMAGE, IMAGE]
@@ -75,22 +75,28 @@ load_image_lib = lib.load_image
 load_image_lib.argtypes = [c_char_p]
 load_image_lib.restype = IMAGE
 
+
 def load_image(f):
-    return load_image_lib(f.encode('ascii'))
+    return load_image_lib(f.encode("ascii"))
+
 
 save_png_lib = lib.save_png
 save_png_lib.argtypes = [IMAGE, c_char_p]
 save_png_lib.restype = None
 
+
 def save_png(im, f):
-    return save_png_lib(im, f.encode('ascii'))
+    return save_png_lib(im, f.encode("ascii"))
+
 
 save_image_lib = lib.save_image
 save_image_lib.argtypes = [IMAGE, c_char_p]
 save_image_lib.restype = None
 
+
 def save_image(im, f):
-    return save_image_lib(im, f.encode('ascii'))
+    return save_image_lib(im, f.encode("ascii"))
+
 
 same_image = lib.same_image
 same_image.argtypes = [IMAGE, IMAGE]
@@ -148,4 +154,3 @@ convolve_image.restype = IMAGE
 if __name__ == "__main__":
     im = load_image("data/dog.jpg")
     save_image(im, "hey")
-
