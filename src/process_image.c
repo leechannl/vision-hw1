@@ -7,12 +7,16 @@
 #include <string.h>
 
 void image_info(image im) {
-  log_info("image size: %dx%d", im.w, im.h);
-  if (im.w * im.h >= 10) {
-    log_info("first 10 pixels: %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", im.data[0], im.data[1], im.data[2], im.data[3],
-             im.data[4], im.data[5], im.data[6], im.data[7], im.data[8], im.data[9]);
+  if (im.w * im.h * im.c >= 10) {
+    log_info("image size: %dx%dx%d, first 10 pixels: %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", im.w, im.h, im.c,
+             im.data[0], im.data[1], im.data[2], im.data[3], im.data[4], im.data[5], im.data[6], im.data[7], im.data[8],
+             im.data[9]);
   } else {
-    log_info("pixels less than 10");
+    log_info("image size: %dx%dx%d", im.w, im.h, im.c);
+    for (int i = 0; i < im.w * im.h * im.c; i++) {
+      printf("%f, ", im.data[i]);
+    }
+    printf("\n");
   }
 }
 

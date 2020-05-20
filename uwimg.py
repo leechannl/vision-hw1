@@ -1,5 +1,6 @@
 import os
-from ctypes import CDLL, POINTER, RTLD_GLOBAL, Structure, c_char_p, c_float, c_int
+from ctypes import (CDLL, POINTER, RTLD_GLOBAL, Structure, c_char_p, c_float,
+                    c_int)
 
 lib = CDLL(os.path.join(os.path.dirname(__file__), "libuwimg.so"), RTLD_GLOBAL)
 
@@ -31,6 +32,10 @@ sub_image.restype = IMAGE
 make_image = lib.make_image
 make_image.argtypes = [c_int, c_int, c_int]
 make_image.restype = IMAGE
+
+make_ones_image = lib.make_ones_image
+make_ones_image.argtypes = [c_int, c_int, c_int]
+make_ones_image.restype = IMAGE
 
 free_image = lib.free_image
 free_image.argtypes = [IMAGE]
@@ -109,6 +114,10 @@ nn_resize.restype = IMAGE
 bilinear_resize = lib.bilinear_resize
 bilinear_resize.argtypes = [IMAGE, c_int, c_int]
 bilinear_resize.restype = IMAGE
+
+l1_normalize = lib.l1_normalize
+l1_normalize.argtypes = [IMAGE]
+l1_normalize.restype = None
 
 make_sharpen_filter = lib.make_sharpen_filter
 make_sharpen_filter.argtypes = []

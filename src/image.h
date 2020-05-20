@@ -27,6 +27,7 @@ image add_image(image a, image b);
 
 // Loading and saving
 image make_image(int w, int h, int c);
+image make_ones_image(int w, int h, int c);
 image load_image(char *filename);
 void save_image(image im, const char *name);
 void save_png(image im, const char *name);
