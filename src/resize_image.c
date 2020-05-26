@@ -3,12 +3,7 @@
 #include <math.h>
 
 float nn_interpolate(image im, float x, float y, int c) {
-  if (x > im.w) { x = im.w - 1; }
-  if (x < 0) { x = 0; }
-  if (y > im.h) { y = im.h - 1; }
-  if (y < 0) { y = 0; }
-
-  float v = get_pixel(im, round(x), round(y), c);
+  float v = get_pixel(im, roundf(x), roundf(y), c);
   return v;
 }
 
@@ -16,24 +11,28 @@ float nn_interpolate(image im, float x, float y, int c) {
 // for (X2, Y2) in im2, coresponding coordinate in im1 is:
 // a * X2 + b = X1
 // a = w1/w2,
-// b = - 0.5 + 0.5 * a
+// b = 0.5*a - 0.5
 image nn_resize(image im, int w, int h) {
-  image_info(im);
+  // image_info(im);
   image new_image = make_image(w, h, im.c);
+
+  float xa = ((float)im.w) / w;
+  float xb = 0.5 * xa - 0.5;
+  float ya = ((float)im.h) / h;
+  float yb = 0.5 * ya - 0.5;
+
   for (int i = 0; i < w; i++) {
     for (int j = 0; j < h; j++) {
       for (int k = 0; k < im.c; k++) {
-        float a = (float)im.w / (float)w;
-        float b = -0.5 + 0.5 * a;
-        float new_x = i * a + b;
-        float new_y = j * a + b;
+        float new_x = i * xa + xb;
+        float new_y = j * ya + yb;
         float v = nn_interpolate(im, new_x, new_y, k);
         set_pixel(new_image, i, j, k, v);
       }
     }
   }
 
-  image_info(new_image);
+  // image_info(new_image);
   return new_image;
 }
 
@@ -67,22 +66,25 @@ float bilinear_interpolate(image im, float x, float y, int c) {
 }
 
 image bilinear_resize(image im, int w, int h) {
-  image_info(im);
+  // image_info(im);
   image new_image = make_image(w, h, im.c);
+
+  float xa = ((float)im.w) / w;
+  float xb = 0.5 * xa - 0.5;
+  float ya = ((float)im.h) / h;
+  float yb = 0.5 * ya - 0.5;
 
   for (int i = 0; i < w; i++) {
     for (int j = 0; j < h; j++) {
       for (int k = 0; k < im.c; k++) {
-        float a = (float)im.w / (float)w;
-        float b = -0.5 + 0.5 * a;
-        float new_x = i * a + b;
-        float new_y = j * a + b;
+        float new_x = i * xa + xb;
+        float new_y = j * ya + yb;
         float v = bilinear_interpolate(im, new_x, new_y, k);
         set_pixel(new_image, i, j, k, v);
       }
     }
   }
 
-  image_info(new_image);
+  // image_info(new_image);
   return new_image;
 }
