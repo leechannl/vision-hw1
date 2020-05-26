@@ -16,7 +16,6 @@ image make_ones_image(int w, int h, int c) {
 }
 
 void l1_normalize(image im) {
-  image_info(im);
   float sum = 0;
   for (int i = 0; i < (im.w * im.h * im.c); i++) {
     sum += im.data[i];
@@ -29,8 +28,6 @@ void l1_normalize(image im) {
       }
     }
   }
-
-  image_info(im);
 }
 
 image make_box_filter(int w) {
@@ -39,9 +36,73 @@ image make_box_filter(int w) {
   return im;
 }
 
+float get_conv(image im, int col, int row, int chn, image f, int f_chn) {
+  assert(f_chn < f.c || f_chn >= 0);
+  float v = 0;
+
+  for (int i = 0; i < f.w; i++) {
+    for (int j = 0; j < f.h; j++) {
+      v += get_pixel(f, i, j, f_chn) * get_pixel(im, col - f.w / 2 + i, row - f.h / 2 + j, chn);
+    }
+  }
+
+  return v;
+}
+
 image convolve_image(image im, image filter, int preserve) {
-  // TODO
-  return make_image(1, 1, 1);
+  assert(filter.c == 1 || filter.c == im.c);
+  image new_im;
+  if (filter.c == im.c) {
+    if (preserve != 1) { // normal convolution, generate a 1 channel image
+      float v = 0;
+      new_im = make_image(im.w, im.h, 1);
+      for (int i = 0; i < im.w; i++) {
+        for (int j = 0; j < im.h; j++) {
+          for (int k = 0; k < im.c; k++) {
+            v += get_conv(im, i, j, k, filter, k);
+          }
+          set_pixel(new_im, i, j, 0, v);
+        }
+      }
+    } else { // preserve channels, keep original channel number
+      float v = 0;
+      new_im = make_image(im.w, im.h, im.c);
+      for (int i = 0; i < im.w; i++) {
+        for (int j = 0; j < im.h; j++) {
+          for (int k = 0; k < im.c; k++) {
+            v = get_conv(im, i, j, k, filter, k);
+            set_pixel(new_im, i, j, k, v);
+          }
+        }
+      }
+    }
+  } else {               // filter.c == 1
+    if (preserve != 1) { // generate a 1 channel image
+      float v = 0;
+      new_im = make_image(im.w, im.h, 1);
+      for (int i = 0; i < im.w; i++) {
+        for (int j = 0; j < im.h; j++) {
+          for (int k = 0; k < im.c; k++) {
+            v += get_conv(im, i, j, k, filter, 0);
+          }
+          set_pixel(new_im, i, j, 0, v);
+        }
+      }
+    } else { // keep orginal channel number
+      float v = 0;
+      new_im = make_image(im.w, im.h, im.c);
+      for (int i = 0; i < im.w; i++) {
+        for (int j = 0; j < im.h; j++) {
+          for (int k = 0; k < im.c; k++) {
+            v = get_conv(im, i, j, k, filter, 0);
+            set_pixel(new_im, i, j, k, v);
+          }
+        }
+      }
+    }
+  }
+
+  return new_im;
 }
 
 image make_highpass_filter() {
