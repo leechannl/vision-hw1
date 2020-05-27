@@ -39,6 +39,13 @@ void set_pixel(image im, int x, int y, int c, float v) {
   im.data[x + im.w * y + im.w * im.h * c] = v;
 }
 
+void set_pixels(image im, float values[], size_t s) {
+  assert(im.w * im.h == s);
+  for (int i = 0; i < s; i++) {
+    im.data[i] = values[i];
+  }
+}
+
 image copy_image_bounds(image im, int width, int height) {
   image copy = make_image(width, height, im.c);
 

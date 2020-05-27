@@ -2,16 +2,21 @@
 #define IMAGE_H
 
 // DO NOT CHANGE THIS FILE
+#include <stdlib.h>
 
 typedef struct {
   int w, h, c;
   float *data;
 } image;
 
+
+#define ARRAY_SIZE(arr) sizeof(arr) / sizeof((arr)[0])
+
 // Basic operations
 void image_info(image im);
 float get_pixel(image im, int x, int y, int c);
 void set_pixel(image im, int x, int y, int c, float v);
+void set_pixels(image im, float values[], size_t s);
 image copy_image(image im);
 image rgb_to_grayscale(image im);
 image grayscale_to_rgb(image im, float r, float g, float b);
@@ -45,6 +50,8 @@ image make_box_filter(int w);
 image make_highpass_filter();
 image make_sharpen_filter();
 image make_emboss_filter();
+image make_vemboss_filter();
+image make_hemboss_filter();
 image make_gaussian_filter(float sigma);
 image make_gx_filter();
 image make_gy_filter();

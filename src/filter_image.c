@@ -54,10 +54,10 @@ image convolve_image(image im, image filter, int preserve) {
   image new_im;
   if (filter.c == im.c) {
     if (preserve != 1) { // normal convolution, generate a 1 channel image
-      float v = 0;
       new_im = make_image(im.w, im.h, 1);
       for (int i = 0; i < im.w; i++) {
         for (int j = 0; j < im.h; j++) {
+          float v = 0;
           for (int k = 0; k < im.c; k++) {
             v += get_conv(im, i, j, k, filter, k);
           }
@@ -78,10 +78,10 @@ image convolve_image(image im, image filter, int preserve) {
     }
   } else {               // filter.c == 1
     if (preserve != 1) { // generate a 1 channel image
-      float v = 0;
       new_im = make_image(im.w, im.h, 1);
       for (int i = 0; i < im.w; i++) {
         for (int j = 0; j < im.h; j++) {
+          float v = 0;
           for (int k = 0; k < im.c; k++) {
             v += get_conv(im, i, j, k, filter, 0);
           }
@@ -106,22 +106,59 @@ image convolve_image(image im, image filter, int preserve) {
 }
 
 image make_highpass_filter() {
-  // TODO
-  return make_image(1, 1, 1);
+  //  0 -1  0
+  // -1  4 -1
+  //  0 -1  0
+  image f = make_image(3, 3, 1);
+  float values[] = {0, -1, 0, -1, 4, -1, 0, -1, 0};
+  set_pixels(f, values, ARRAY_SIZE(values));
+  return f;
 }
 
 image make_sharpen_filter() {
-  // TODO
-  return make_image(1, 1, 1);
+  //  0 -1  0
+  // -1  5 -1
+  //  0 -1  0
+  image f = make_image(3, 3, 1);
+  float values[] = {0, -1, 0, -1, 5, -1, 0, -1, 0};
+  set_pixels(f, values, ARRAY_SIZE(values));
+  return f;
 }
 
 image make_emboss_filter() {
-  // TODO
-  return make_image(1, 1, 1);
+  // -2 -1  0
+  // -1  1  1
+  //  0  1  2
+  image f = make_image(3, 3, 1);
+  float values[] = {-2, -1, 0, -1, 1, 1, 0, 1, 2};
+  set_pixels(f, values, ARRAY_SIZE(values));
+  return f;
+}
+
+image make_vemboss_filter() {
+  //  0  1  0
+  //  0  1  0
+  //  0 -1  0
+  image f = make_image(3, 3, 1);
+  float values[] = {0, 1, 0, 0, 1, 0, 0, -1, 0};
+  set_pixels(f, values, ARRAY_SIZE(values));
+  return f;
+}
+
+image make_hemboss_filter() {
+  //  0  0  0
+  // -1  1  1
+  //  0  0  0
+  image f = make_image(3, 3, 1);
+  float values[] = {0, 0, 0, -1, 1, 1, 0, 0, 0};
+  set_pixels(f, values, ARRAY_SIZE(values));
+  return f;
 }
 
 // Question 2.2.1: Which of these filters should we use preserve when we run our convolution and which ones should we
-// not? Why? Answer: TODO
+// not? Why?
+// Answer: when high
+//
 
 // Question 2.2.2: Do we have to do any post-processing for the above filters? Which ones and why?
 // Answer: TODO

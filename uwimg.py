@@ -131,6 +131,14 @@ make_emboss_filter = lib.make_emboss_filter
 make_emboss_filter.argtypes = []
 make_emboss_filter.restype = IMAGE
 
+make_vemboss_filter = lib.make_vemboss_filter
+make_vemboss_filter.argtypes = []
+make_vemboss_filter.restype = IMAGE
+
+make_hemboss_filter = lib.make_hemboss_filter
+make_hemboss_filter.argtypes = []
+make_hemboss_filter.restype = IMAGE
+
 make_highpass_filter = lib.make_highpass_filter
 make_highpass_filter.argtypes = []
 make_highpass_filter.restype = IMAGE

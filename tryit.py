@@ -1,5 +1,8 @@
-from uwimg import (bilinear_resize, l1_normalize, load_image, make_box_filter,
-                   make_ones_image, nn_resize, save_image)
+from uwimg import (bilinear_resize, clamp_image, convolve_image, l1_normalize,
+                   load_image, make_box_filter, make_emboss_filter,
+                   make_hemboss_filter, make_highpass_filter, make_ones_image,
+                   make_sharpen_filter, make_vemboss_filter, nn_resize,
+                   save_image)
 
 im = load_image("data/dogsmall.jpg")
 a = nn_resize(im, im.w * 4, im.h * 4)
@@ -22,3 +25,33 @@ im = make_ones_image(2, 5, 1)
 l1_normalize(im)
 
 im = make_box_filter(3)
+
+im = load_image("data/dog.jpg")
+f = make_highpass_filter()
+a = convolve_image(im, f, 0)
+clamp_image(a)
+save_image(a, "dog-highpass")
+
+im = load_image("data/dog.jpg")
+f = make_sharpen_filter()
+a = convolve_image(im, f, 1)
+clamp_image(a)
+save_image(a, "dog-sharpen")
+
+im = load_image("data/dog.jpg")
+f = make_emboss_filter()
+a = convolve_image(im, f, 1)
+clamp_image(a)
+save_image(a, "dog-emboss")
+
+im = load_image("data/dog.jpg")
+f = make_vemboss_filter()
+a = convolve_image(im, f, 1)
+clamp_image(a)
+save_image(a, "dog-vemboss")
+
+im = load_image("data/dog.jpg")
+f = make_hemboss_filter()
+a = convolve_image(im, f, 1)
+clamp_image(a)
+save_image(a, "dog-hemboss")
