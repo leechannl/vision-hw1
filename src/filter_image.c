@@ -164,6 +164,8 @@ image make_hemboss_filter() {
 // Question 2.2.2: Do we have to do any post-processing for the above filters? Which ones and why?
 // Answer:
 //    Need to do clamp image. Because after doing convolution, the pixel value is likely greater than 1.
+//    But if all coefficients is positive and sum to 1, then the pixel value will not greater than 1(nomal weighted sum).
+//    So Gaussian filter no need to clamp.
 
 image make_gaussian_filter(float sigma) {
   // g(x,y) = 1/(TWO_PI*pow(sigma,2)) * exp(-( (pow(x-mean,2)+pow(y-mean,2)) / (2*pow(sigma,2)) ))
