@@ -164,8 +164,8 @@ image make_hemboss_filter() {
 // Question 2.2.2: Do we have to do any post-processing for the above filters? Which ones and why?
 // Answer:
 //    Need to do clamp image. Because after doing convolution, the pixel value is likely greater than 1.
-//    But if all coefficients is positive and sum to 1, then the pixel value will not greater than 1(nomal weighted sum).
-//    So Gaussian filter no need to clamp.
+//    But if all coefficients is positive and sum to 1, then the pixel value will not greater than 1(nomal weighted
+//    sum). So Gaussian filter no need to clamp.
 
 image make_gaussian_filter(float sigma) {
   // g(x,y) = 1/(TWO_PI*pow(sigma,2)) * exp(-( (pow(x-mean,2)+pow(y-mean,2)) / (2*pow(sigma,2)) ))
@@ -193,32 +193,92 @@ image make_gaussian_filter(float sigma) {
 }
 
 image add_image(image a, image b) {
-  // TODO
-  return make_image(1, 1, 1);
+  assert(a.w == b.w);
+  assert(a.h == b.h);
+  assert(a.c == b.c);
+  image new_im = make_image(a.w, a.h, a.c);
+  for (int i = 0; i < a.w; i++) {
+    for (int j = 0; j < a.h; j++) {
+      for (int k = 0; k < a.c; k++) {
+        set_pixel(new_im, i, j, k, get_pixel(a, i, j, k) + get_pixel(b, i, j, k));
+      }
+    }
+  }
+  return new_im;
 }
 
 image sub_image(image a, image b) {
-  // TODO
-  return make_image(1, 1, 1);
+  assert(a.w == b.w);
+  assert(a.h == b.h);
+  assert(a.c == b.c);
+  image new_im = make_image(a.w, a.h, a.c);
+  for (int i = 0; i < a.w; i++) {
+    for (int j = 0; j < a.h; j++) {
+      for (int k = 0; k < a.c; k++) {
+        set_pixel(new_im, i, j, k, get_pixel(a, i, j, k) - get_pixel(b, i, j, k));
+      }
+    }
+  }
+  return new_im;
 }
 
 image make_gx_filter() {
-  // TODO
-  return make_image(1, 1, 1);
+  // -1  0  1
+  // -2  0  2
+  // -1  0  1
+  image f = make_image(3, 3, 1);
+  float values[] = {-1, 0, 1, -2, 0, 2, -1, 0, 1};
+  set_pixels(f, values, ARRAY_SIZE(values));
+  return f;
 }
 
 image make_gy_filter() {
-  // TODO
-  return make_image(1, 1, 1);
+  // -1 -2 -1
+  //  0  0  0
+  //  1  2  1
+  image f = make_image(3, 3, 1);
+  float values[] = {-1, -2, -1, 0, 0, 0, 1, 2, 1};
+  set_pixels(f, values, ARRAY_SIZE(values));
+  return f;
 }
 
 void feature_normalize(image im) {
-  // TODO
+  float max = im.data[0];
+  float min = im.data[0];
+  for (int i = 0; i < im.w * im.h * im.c; i++) {
+    if (im.data[i] > max) { max = im.data[i]; }
+    if (im.data[i] < min) { min = im.data[i]; }
+  }
+
+  float range = max - min;
+  if (range == 0) {
+    for (int i = 0; i < im.w * im.h * im.c; i++) {
+      im.data[i] = 0;
+    }
+  } else {
+    for (int i = 0; i < im.w * im.h * im.c; i++) {
+      im.data[i] = (im.data[i] - min) / range;
+    }
+  }
 }
 
 image *sobel_image(image im) {
-  // TODO
-  return calloc(2, sizeof(image));
+  // magnitude = sqrt(gx*gx + gy*gy)
+  // direction = atanf(gy/gx)
+
+  image *result = calloc(2, sizeof(image));
+  result[0] = make_image(im.w, im.h, 1);
+  result[1] = make_image(im.w, im.h, 1);
+  image gx = convolve_image(im, make_gx_filter(), 0);
+  image gy = convolve_image(im, make_gy_filter(), 0);
+  for (int i = 0; i < im.w * im.h; i++) {
+    float vx = gx.data[i];
+    float vy = gy.data[i];
+    result[0].data[i] = sqrtf(vx * vx + vy * vy);
+    result[1].data[i] = atan2(vy, vx);
+  }
+
+  return result;
 }
 
 image colorize_sobel(image im) {
