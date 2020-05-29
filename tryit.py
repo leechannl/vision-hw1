@@ -1,6 +1,6 @@
-from uwimg import (bilinear_resize, clamp_image, convolve_image, l1_normalize, load_image, make_box_filter,
-                   make_emboss_filter, make_gaussian_filter, make_hemboss_filter, make_highpass_filter, make_ones_image,
-                   make_sharpen_filter, make_vemboss_filter, nn_resize, save_image)
+from uwimg import (bilinear_resize, clamp_image, colorize_sobel, convolve_image, l1_normalize, load_image,
+                   make_box_filter, make_emboss_filter, make_gaussian_filter, make_hemboss_filter, make_highpass_filter,
+                   make_ones_image, make_sharpen_filter, make_vemboss_filter, nn_resize, save_image)
 
 im = load_image("data/dogsmall.jpg")
 a = nn_resize(im, im.w * 4, im.h * 4)
@@ -57,3 +57,7 @@ im = load_image("data/dog.jpg")
 f = make_gaussian_filter(2)
 blur = convolve_image(im, f, 1)
 save_image(blur, "dog-gauss2")
+
+im = load_image("data/dog.jpg")
+color_sobel = colorize_sobel(im)
+save_image(color_sobel, "dog-color-sobel")

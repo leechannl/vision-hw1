@@ -282,6 +282,17 @@ image *sobel_image(image im) {
 }
 
 image colorize_sobel(image im) {
-  // TODO
-  return make_image(1, 1, 1);
+  image *result = sobel_image(im);
+  feature_normalize(result[0]);
+  feature_normalize(result[1]);
+  im = make_image(im.w, im.h, im.c);
+  for (int i = 0; i < im.w; i++) {
+    for (int j = 0; j < im.h; j++) {
+      set_pixel(im, i, j, 0, get_pixel(result[0], i, j, 0));
+      set_pixel(im, i, j, 1, get_pixel(result[0], i, j, 0));
+      set_pixel(im, i, j, 2, get_pixel(result[1], i, j, 0));
+    }
+  }
+  hsv_to_rgb(im);
+  return im;
 }
